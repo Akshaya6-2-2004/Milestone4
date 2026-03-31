@@ -1,0 +1,41 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ user_type|title }} Login - SmartStock</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <div class="login-brand">SmartStock</div>
+    <p class="login-sub">{{ user_type|title }} portal</p>
+    {% if error %}
+      <div class="alert">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      {% if user_type == 'supplier' %}
+      <label>Email ID:</label>
+      <input type="email" name="email" placeholder="Supplier email" required>
+      {% else %}
+      <label>Username:</label>
+      <input type="text" name="username" placeholder="Username" required>
+      {% endif %}
+      <label>Password:</label>
+      <input type="password" name="password" placeholder="Password" required>
+      <button class="button" type="submit">Sign in</button>
+    </form>
+    <div class="login-links">
+      {% if user_type == 'supplier' %}
+      <p style="color:#cbd5e1; font-size:.85rem; margin-bottom:.4rem;">Supplier not registered?</p>
+      <a class="link-btn" href="{% url 'supplier_register' %}">Register Supplier</a>
+      {% endif %}
+      <p style="margin-top:.65rem; color:#64748b; font-size:.82rem;">Switch portal:</p>
+      <a class="link-btn" href="{% url 'admin_login' %}">Admin Login</a>
+      <a class="link-btn" href="{% url 'supplier_login' %}">Supplier Login</a>
+    </div>
+  </div>
+</body>
+</html>

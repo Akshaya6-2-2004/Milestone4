@@ -1,0 +1,50 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ portal_name|default:"SmartStock Dashboard" }}</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">SS</div><div><div class="title">SmartStock</div><div class="subtitle">Inventory Optimizer</div></div></div>
+      <nav class="nav-links"><a class="active" href="{% url 'dashboard' %}">Dashboard</a><a href="{% url 'add_product' %}">Add Product</a><a href="{% url 'product_list' %}">Product List</a>{% if has_supplier %}<a href="{% url 'supplier_profile' %}">My Profile</a>{% endif %}<a href="{% url 'logout' %}">Logout</a></nav>
+      <div class="sidebar-footer">Analytics • Inventory</div>
+    </aside>
+    <div class="main">
+      <header class="topbar"><div class="left"><div class="app-title">{{ portal_name|default:"SmartStock Dashboard" }}</div><small>Monitor stock levels & reorder with confidence</small></div><div class="right"><form method="get"><input class="search" type="search" name="search" placeholder="Search products..." value="{{ search }}"><button class="button" type="submit">Search</button></form></div></header>
+      <main class="content">
+        <section class="hero"><div><h1>Inventory HQ</h1><p>One place for inventory analytics, search, and product actions.</p></div><a class="button" href="{% url 'add_product' %}">+ Add Product</a></section>
+
+        <section class="stats-grid"><article class="stat-card"><div class="stat-label">Total SKUs</div><h3>{{ total_products }}</h3><small>Active products</small></article><article class="stat-card"><div class="stat-label">Current Stock</div><h3>{{ total_stock }}</h3><small>Units across inventory</small></article><article class="stat-card"><div class="stat-label">Low stock</div><h3>{{ low_stock_count }}</h3><small>Below reorder threshold</small></article><article class="stat-card"><div class="stat-label">Critical</div><h3>{{ critical_count }}</h3><small>Immediate action</small></article></section>
+
+        <section class="dashboard-grid">
+          <div class="panel"><div class="panel-head"><h3>Latest Inventory</h3><a href="{% url 'product_list' %}">View all</a></div><table><thead><tr><th>Product</th><th>SKU</th><th>Category</th><th>Qty</th><th>Reorder</th><th>Status</th><th>Action</th></tr></thead><tbody>{% for product in products %}<tr><td>{{ product.name }}</td><td>{{ product.sku }}</td><td>{{ product.category }}</td><td>{{ product.quantity }}</td><td>{{ product.reorder }}</td><td><span class="badge {{ product.status }}">{{ product.status|title }}</span></td><td><a class="link-btn" href="{% url 'update_product' product.id %}">Edit</a></td></tr>{% endfor %}</tbody></table></div>
+
+          <div class="panel alerts-panel"><div class="panel-head"><h3>Reorder Suggestions</h3></div><div class="alert-list">{% for alert in alerts %}<div class="alert-row"><div><div class="alert-title">{{ alert.name }}</div><div class="alert-meta">{{ alert.message }}</div></div><button class="action">{{ alert.action }}</button></div>{% endfor %}</div></div>
+        </section>
+
+        <section class="charts-grid"><div class="panel small"><h3>Category Stock</h3><canvas id="categoryChart" height="160"></canvas></div><div class="panel small"><h3>Status Distribution</h3><canvas id="statusChart" height="160"></canvas></div><div class="panel small"><h3>Stock by Status</h3><div class="pill-row"><span class="chip">Optimal: {{ status_count.optimal }}</span><span class="chip">Low: {{ status_count.low }}</span><span class="chip">Critical: {{ status_count.critical }}</span><span class="chip">Overstock: {{ status_count.overstock }}</span></div></div></section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const categoryData = {
+      labels: [{% for item in category_stats %}'{{ item.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+      datasets: [{ data: [{% for item in category_stats %}{{ item.stock }}{% if not forloop.last %}, {% endif %}{% endfor %}], backgroundColor: ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6'], borderRadius: 4 }]
+    };
+    new Chart(document.getElementById('categoryChart'), { type: 'bar', data: categoryData, options: { plugins: { legend: { display:false } }, scales:{ y:{ beginAtZero:true } } } });
+
+    const statusData = {
+      labels: ['Optimal','Low','Critical','Overstock'],
+      datasets: [{ data: [{{ status_count.optimal }}, {{ status_count.low }}, {{ status_count.critical }}, {{ status_count.overstock }}], backgroundColor: ['#10b981','#f59e0b','#ef4444','#3b82f6'] }]
+    };
+    new Chart(document.getElementById('statusChart'), { type: 'pie', data: statusData, options: { plugins:{ legend:{ position:'bottom' } } } });
+  </script>
+</body>
+</html>

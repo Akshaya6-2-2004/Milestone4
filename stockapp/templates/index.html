@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Stock Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Smart Stock Dashboard</h1>
+
+<!-- Stats -->
+<div class="stats">
+
+    <div class="card">
+        <h3>Total Products</h3>
+        <p>{{ total }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Low Stock</h3>
+        <p>{{ low }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Critical</h3>
+        <p>{{ critical }}</p>
+    </div>
+
+</div>
+
+<h2>Inventory</h2>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Stock</th>
+        <th>Status</th>
+    </tr>
+
+{% for product in products %}
+<tr>
+    <td>{{ product.name }}</td>
+    <td>{{ product.category }}</td>
+    <td>{{ product.stock }}</td>
+    <td class="{{ product.status|lower }}">
+        {{ product.status }}
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>

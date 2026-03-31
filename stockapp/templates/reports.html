@@ -1,0 +1,66 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports - SmartStock</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">RP</div><div><div class="title">SmartStock</div><div class="subtitle">Reports Module</div></div></div>
+      <nav class="nav-links"><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a><a class="active" href="{% url 'reports_dashboard' %}">Reports</a><a href="{% url 'logout' %}">Logout</a></nav>
+      <div class="sidebar-footer">Downloadable Business Reports</div>
+    </aside>
+    <div class="main">
+      <header class="topbar"><div class="left"><div class="app-title">Reports Center</div><small>Sales, purchases, stock summary, and invoice PDF</small></div></header>
+      <main class="content">
+        <section class="panel" style="margin-bottom:.8rem;">
+          <form method="get" style="display:flex; gap:.6rem; align-items:end; flex-wrap:wrap;">
+            <div><label>Date From</label><input class="search" type="date" name="date_from" value="{{ date_from }}"></div>
+            <div><label>Date To</label><input class="search" type="date" name="date_to" value="{{ date_to }}"></div>
+            <button class="button" type="submit">Apply</button>
+          </form>
+        </section>
+
+        <section class="stats-grid">
+          <article class="stat-card"><div class="stat-label">Sales Qty</div><h3>{{ sales_total_qty }}</h3><small>Value: {{ sales_total_value }}</small></article>
+          <article class="stat-card"><div class="stat-label">Purchase Qty</div><h3>{{ purchase_total_qty }}</h3><small>Value: {{ purchase_total_value }}</small></article>
+          <article class="stat-card"><div class="stat-label">Stock Items</div><h3>{{ stock|length }}</h3><small>Total stock value: {{ stock_total_value }}</small></article>
+        </section>
+
+        <section class="panel" style="margin:.8rem 0;">
+          <div class="panel-head"><h3>Downloadable Reports</h3></div>
+          <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+            <a class="button" href="{% url 'download_sales_report' %}?format=pdf&date_from={{ date_from }}&date_to={{ date_to }}">Sales PDF</a>
+            <a class="button" href="{% url 'download_purchase_report' %}?format=pdf&date_from={{ date_from }}&date_to={{ date_to }}">Purchase PDF</a>
+            <a class="button" href="{% url 'download_stock_summary_report' %}?format=pdf">Stock Summary PDF</a>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h3>Recent Sales (Invoice PDF)</h3></div>
+          <table>
+            <thead><tr><th>Date</th><th>Product</th><th>Quantity</th><th>Value</th><th>Invoice</th></tr></thead>
+            <tbody>
+              {% for row in sales %}
+                <tr>
+                  <td>{{ row.created_at|date:"Y-m-d" }}</td>
+                  <td>{{ row.product.name }}</td>
+                  <td>{{ row.quantity }}</td>
+                  <td>{{ row.quantity|floatformat:2 }} x {{ row.product.price|floatformat:2 }}</td>
+                  <td><a class="link-btn" href="{% url 'generate_invoice_pdf' row.id %}">Download Invoice</a></td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="5">No sales records found in selected range.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

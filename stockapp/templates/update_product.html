@@ -1,0 +1,22 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Product - SmartStock</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">SS</div><div><div class="title">SmartStock</div><div class="subtitle">Inventory Optimizer</div></div></div>
+      <nav class="nav-links"><a href="{% url 'dashboard' %}">Dashboard</a><a href="{% url 'add_product' %}">Add Product</a><a href="{% url 'product_list' %}">Product list</a></nav>
+    </aside>
+    <div class="main">
+      <header class="topbar"><div class="left"><div class="app-title">Update Product</div></div></header>
+      <main class="content"><div class="panel"><h3>Update {{ product.name }}</h3><form method="post">{% csrf_token %}{{ form.as_p }}<button class="button" type="submit">Save Changes</button></form><a class="button" style="background:#3b82f6;margin-top:.5rem;" href="{% url 'product_list' %}">Back to list</a></div></main>
+    </div>
+  </div>
+</body>
+</html>

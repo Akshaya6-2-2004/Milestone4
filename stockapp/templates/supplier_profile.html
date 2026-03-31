@@ -1,0 +1,111 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supplier Profile - SmartStock</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">SS</div>
+        <div>
+          <div class="title">SmartStock</div>
+          <div class="subtitle">Supplier Portal</div>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'supplier_profile' %}" class="active">My Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
+      </nav>
+      <div class="sidebar-footer">Supplier settings and alerts</div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="left">
+          <div class="app-title">Supplier Profile</div>
+          <small>Manage your details and low-stock email alerts</small>
+        </div>
+      </header>
+
+      <main class="content">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert" style="margin-bottom: .6rem;">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <section class="panel" style="margin-bottom: 1rem;">
+          <div class="panel-head">
+            <h3>Account Details</h3>
+          </div>
+          <form method="post" style="display:grid; gap:.6rem;">
+            {% csrf_token %}
+            <div>
+              <label for="{{ form.name.id_for_label }}">Name</label>
+              {{ form.name }}
+            </div>
+            <div>
+              <label for="{{ form.company.id_for_label }}">Company</label>
+              {{ form.company }}
+            </div>
+            <div>
+              <label for="{{ form.phone.id_for_label }}">Phone</label>
+              {{ form.phone }}
+            </div>
+            <div>
+              <label for="{{ form.email.id_for_label }}">Email for Alerts</label>
+              {{ form.email }}
+            </div>
+            <div>
+              <label for="{{ form.low_stock_threshold.id_for_label }}">Low Stock Threshold</label>
+              {{ form.low_stock_threshold }}
+            </div>
+            <p style="font-size:.85rem; color:#475569;">
+              Low-stock notifications are sent once per day per product when quantity falls below the threshold.
+            </p>
+            <button class="button" type="submit">Save Profile</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h3>Products Assigned to You</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Reorder Level</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+                <tr>
+                  <td>{{ product.name }}</td>
+                  <td>{{ product.category }}</td>
+                  <td>{{ product.price }}</td>
+                  <td>{{ product.quantity }}</td>
+                  <td>{{ product.reorder_level }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5">No products assigned to this supplier yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

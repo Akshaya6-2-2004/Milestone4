@@ -1,0 +1,30 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartStock Home</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <div class="login-brand">SmartStock</div>
+    <p class="login-sub">Choose your portal</p>
+
+    <div style="display:grid; gap:.55rem;">
+      {% if primary_portal == 'supplier' %}
+      <a class="button" href="{% url 'supplier_login' %}">Supplier Login</a>
+      <p style="text-align:center; color:#64748b; font-size:.82rem;">or</p>
+      <a class="link-btn" href="{% url 'admin_login' %}">Admin Login</a>
+      {% else %}
+      <a class="button" href="{% url 'admin_login' %}">Admin Login</a>
+      <p style="text-align:center; color:#64748b; font-size:.82rem;">or</p>
+      <a class="link-btn" href="{% url 'supplier_login' %}">Supplier Login</a>
+      <a class="link-btn" href="{% url 'home' %}?primary=supplier">Show Supplier First</a>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>
